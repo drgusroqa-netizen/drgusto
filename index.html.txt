@@ -144,6 +144,14 @@
             width: auto;
         }
 
+        .btn-warning {
+            background: linear-gradient(to left, var(--warning), #fbbf24);
+        }
+
+        .btn-success {
+            background: linear-gradient(to left, var(--success), #34d399);
+        }
+
         /* Header & Navigation */
         .header {
             background-color: var(--white);
@@ -785,14 +793,31 @@
             text-align: right;
         }
 
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn {
+            background-color: var(--warning);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
         .delete-btn {
             background-color: var(--error);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 12px;
         }
 
         .orders-list {
@@ -816,6 +841,29 @@
             margin-bottom: 15px;
         }
 
+        .order-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-initial {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-final {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
         .order-delete {
             position: absolute;
             top: 15px;
@@ -825,6 +873,41 @@
             color: var(--error);
             cursor: pointer;
             font-size: 18px;
+        }
+
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Orders Tabs */
+        .orders-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .order-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .order-tab:hover {
+            background-color: var(--light-bg);
+        }
+
+        .order-tab.active {
+            border-bottom-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .orders-content {
+            min-height: 400px;
         }
 
         /* Discount Management */
@@ -937,6 +1020,32 @@
 
         .image-upload-input {
             display: none;
+        }
+
+        /* Edit Product Modal */
+        .edit-product-modal {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .edit-product-content {
+            background-color: var(--white);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            padding: 30px;
         }
 
         /* Payment & Location Pages */
@@ -1234,7 +1343,7 @@
                 
                 <div class="d-flex align-center">
                     <div class="cart-summary" id="cartBtn">
-                        <span id="cartTotal">ريال قطري 0.00</span>
+                        <span id="cartTotal">QR 0.00</span>
                         <i class="fas fa-shopping-cart cart-icon"></i>
                     </div>
                     
@@ -1307,15 +1416,15 @@
                     <div class="price-summary">
                         <div class="price-row">
                             <span data-translate="subtotal">المجموع الفرعي:</span>
-                            <span id="subtotalPrice">ريال قطري 0.00</span>
+                            <span id="subtotalPrice">QR 0.00</span>
                         </div>
                         <div class="price-row">
                             <span data-translate="discount">الخصم:</span>
-                            <span id="discountPrice">ريال قطري 0.00</span>
+                            <span id="discountPrice">QR 0.00</span>
                         </div>
                         <div class="price-row price-total">
                             <span data-translate="total">الإجمالي:</span>
-                            <span id="totalPrice">ريال قطري 0.00</span>
+                            <span id="totalPrice">QR 0.00</span>
                         </div>
                     </div>
                     
@@ -1425,7 +1534,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="adminProductPrice" data-translate="product_price">السعر (ريال قطري)</label>
+                        <label for="adminProductPrice" data-translate="product_price">السعر (QR)</label>
                         <input type="number" id="adminProductPrice" placeholder="أدخل السعر بالريال القطري" min="0" step="0.01">
                     </div>
                     
@@ -1440,7 +1549,7 @@
                                 <img id="productImagePreviewImg" src="" alt="معاينة صورة المنتج">
                             </div>
                             <label class="upload-btn">
-                                <i class="fas fa-upload"></i> اختر صورة من الحاسوب
+                                <i class="fas fa-upload"></i> <span data-translate="choose_image">اختر صورة من الحاسوب</span>
                                 <input type="file" id="adminProductImageFile" class="image-upload-input" accept="image/*">
                             </label>
                         </div>
@@ -1523,8 +1632,22 @@ info@drgustoshop.com
                 <section id="adminOrdersSection" class="admin-section hidden">
                     <h3 data-translate="customer_orders">طلبات العملاء</h3>
                     
-                    <div class="orders-list" id="adminOrdersList">
-                        <!-- Orders will be loaded here -->
+                    <div class="orders-tabs">
+                        <div class="order-tab active" data-status="pending" data-translate="pending_orders">الطلبات المعلقة</div>
+                        <div class="order-tab" data-status="initial" data-translate="initial_completion">الإنهاء الأولي</div>
+                        <div class="order-tab" data-status="final" data-translate="final_completion">الإنهاء الختامي</div>
+                    </div>
+                    
+                    <div class="orders-content">
+                        <div id="pendingOrdersList" class="orders-list">
+                            <!-- Pending orders will be loaded here -->
+                        </div>
+                        <div id="initialOrdersList" class="orders-list hidden">
+                            <!-- Initial completion orders will be loaded here -->
+                        </div>
+                        <div id="finalOrdersList" class="orders-list hidden">
+                            <!-- Final completion orders will be loaded here -->
+                        </div>
                     </div>
                 </section>
                 
@@ -1600,6 +1723,17 @@ info@drgustoshop.com
                                 <option value="transfer_account">الرجاء التحويل إلى الحساب</option>
                                 <option value="continue_qnb">المتابعة إلى البنك QNB الإلكتروني</option>
                                 <option value="order_sent_to_admin">تم إرسال طلبك إلى مدير المتجر</option>
+                                <option value="pending_orders">الطلبات المعلقة</option>
+                                <option value="initial_completion">الإنهاء الأولي</option>
+                                <option value="final_completion">الإنهاء الختامي</option>
+                                <option value="choose_image">اختر صورة من الحاسوب</option>
+                                <option value="edit_product">تعديل المنتج</option>
+                                <option value="update_product">تحديث المنتج</option>
+                                <option value="initial_completion_btn">الإنهاء الأولي</option>
+                                <option value="final_completion_btn">الإنهاء الختامي</option>
+                                <option value="order_status_pending">معلق</option>
+                                <option value="order_status_initial">إنهاء أولي</option>
+                                <option value="order_status_final">إنهاء ختامي</option>
                             </select>
                         </div>
                         
@@ -1613,6 +1747,51 @@ info@drgustoshop.com
                 </section>
             </div>
         </section>
+
+        <!-- Edit Product Modal -->
+        <div id="editProductModal" class="edit-product-modal hidden">
+            <div class="edit-product-content">
+                <button class="modal-close" id="editModalClose">&times;</button>
+                <h3 data-translate="edit_product">تعديل المنتج</h3>
+                
+                <div class="form-group">
+                    <label for="editProductName" data-translate="product_name">اسم المنتج</label>
+                    <input type="text" id="editProductName" placeholder="أدخل اسم المنتج">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editProductDescription" data-translate="product_description">وصف المنتج</label>
+                    <textarea id="editProductDescription" placeholder="أدخل وصف المنتج"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editProductPrice" data-translate="product_price">السعر (QR)</label>
+                    <input type="number" id="editProductPrice" placeholder="أدخل السعر بالريال القطري" min="0" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editProductImage" data-translate="product_image">صورة المنتج</label>
+                    <div class="image-upload-container">
+                        <div class="image-preview" id="editProductImagePreview">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>سيظهر معاينة الصورة هنا</span>
+                            </div>
+                            <img id="editProductImagePreviewImg" src="" alt="معاينة صورة المنتج">
+                        </div>
+                        <label class="upload-btn">
+                            <i class="fas fa-upload"></i> <span data-translate="choose_image">اختر صورة من الحاسوب</span>
+                            <input type="file" id="editProductImageFile" class="image-upload-input" accept="image/*">
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-between mt-20">
+                    <button id="cancelEditBtn" class="btn btn-small">إلغاء</button>
+                    <button id="updateProductBtn" class="btn btn-pink" data-translate="update_product">تحديث المنتج</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Payment Steps -->
         <section id="paymentPage" class="container hidden">
@@ -1638,14 +1817,14 @@ info@drgustoshop.com
             
             <div class="payment-info">
                 <h2 class="mb-20" data-translate="complete_your_purchase">أكمل عملية الشراء</h2>
-                <p data-translate="your_order_total">إجمالي طلبك: <strong id="orderTotalAmount">ريال قطري 0.00</strong></p>
+                <p data-translate="your_order_total">إجمالي طلبك: <strong id="orderTotalAmount">QR 0.00</strong></p>
                 
                 <div class="bank-details" id="bankDetails">
                     <span data-translate="transfer_account">الرجاء التحويل إلى الحساب</span> <strong>77791874</strong> <span data-translate="immediately_qnb">فوراً QNB</span>
                 </div>
                 
                 <div class="contact-phone">
-                    <i class="fas fa-phone"></i> للاستفسارات: <strong>77791874</strong>
+                    <i class="fas fa-phone"></i> <span data-translate="for_inquiries">للاستفسارات:</span> <strong>77791874</strong>
                 </div>
                 
                 <p class="mb-20" data-translate="after_payment_continue">بعد الدفع، اضغط على متابعة لتقديم عنوان التسليم.</p>
@@ -1742,7 +1921,7 @@ info@drgustoshop.com
                 </div>
                 
                 <div class="contact-phone">
-                    <i class="fas fa-phone"></i> للاستفسارات: <strong>77791874</strong>
+                    <i class="fas fa-phone"></i> <span data-translate="for_inquiries">للاستفسارات:</span> <strong>77791874</strong>
                 </div>
                 
                 <p class="mb-20" data-translate="after_payment_redirect">بعد الدفع، ستتم إعادة توجيهك لإكمال المعاملة.</p>
@@ -1807,7 +1986,6 @@ info@drgustoshop.com
                 name: "أواني إذابة الشوكولاتة", 
                 price: 45.00,
                 description: "أواني خاصة لإذابة الشوكولاتة بدرجة حرارة مثالية للحفاظ على قوامها وطعمها.",
-                image: null,
                 imageData: null,
                 comments: []
             },
@@ -1816,25 +1994,6 @@ info@drgustoshop.com
                 name: "عدة تزيين الكيك", 
                 price: 89.00,
                 description: "عدة متكاملة تحتوي على جميع الأدوات اللازمة لتزيين الكيك بشكل احترافي.",
-                image: null,
-                imageData: null,
-                comments: []
-            },
-            { 
-                id: 3, 
-                name: "مسحوق الكاكاو الفاخر", 
-                price: 32.50,
-                description: "مسحوق كاكاو عالي الجودة من أفضل حبوب الكاكاو المستوردة.",
-                image: null,
-                imageData: null,
-                comments: []
-            },
-            { 
-                id: 4, 
-                name: "نشابة الفوندان", 
-                price: 24.00,
-                description: "نشابة خاصة لتسهيل فرد عجينة الفوندان بالتساوي على الكيك.",
-                image: null,
                 imageData: null,
                 comments: []
             }
@@ -1849,6 +2008,8 @@ info@drgustoshop.com
         let translations = {};
         let isLocationSelected = false;
         let currentImageFile = null;
+        let editImageFile = null;
+        let editingProductId = null;
 
         // ترجمات الموقع
         translations = {
@@ -1889,7 +2050,7 @@ info@drgustoshop.com
                 site_editor: "محرر الموقع",
                 product_name: "اسم المنتج",
                 product_description: "وصف المنتج",
-                product_price: "السعر (ريال قطري)",
+                product_price: "السعر (QR)",
                 product_image: "صورة المنتج",
                 add_product: "إضافة منتج",
                 existing_products: "المنتجات الحالية",
@@ -1942,7 +2103,21 @@ info@drgustoshop.com
                 quick_links: "روابط سريعة",
                 products: "المنتجات",
                 contact_info: "معلومات الاتصال",
-                all_rights_reserved: "جميع الحقوق محفوظة."
+                all_rights_reserved: "جميع الحقوق محفوظة.",
+                
+                // إدارة الطلبات
+                pending_orders: "الطلبات المعلقة",
+                initial_completion: "الإنهاء الأولي",
+                final_completion: "الإنهاء الختامي",
+                choose_image: "اختر صورة من الحاسوب",
+                edit_product: "تعديل المنتج",
+                update_product: "تحديث المنتج",
+                initial_completion_btn: "الإنهاء الأولي",
+                final_completion_btn: "الإنهاء الختامي",
+                order_status_pending: "معلق",
+                order_status_initial: "إنهاء أولي",
+                order_status_final: "إنهاء ختامي",
+                for_inquiries: "للاستفسارات:"
             },
             en: {
                 products_title: "Our Premium Products",
@@ -1978,7 +2153,7 @@ info@drgustoshop.com
                 site_editor: "Site Editor",
                 product_name: "Product Name",
                 product_description: "Product Description",
-                product_price: "Price (QAR)",
+                product_price: "Price (QR)",
                 product_image: "Product Image",
                 add_product: "Add Product",
                 existing_products: "Existing Products",
@@ -2027,7 +2202,19 @@ info@drgustoshop.com
                 quick_links: "Quick Links",
                 products: "Products",
                 contact_info: "Contact Info",
-                all_rights_reserved: "All rights reserved."
+                all_rights_reserved: "All rights reserved.",
+                pending_orders: "Pending Orders",
+                initial_completion: "Initial Completion",
+                final_completion: "Final Completion",
+                choose_image: "Choose Image from Computer",
+                edit_product: "Edit Product",
+                update_product: "Update Product",
+                initial_completion_btn: "Initial Completion",
+                final_completion_btn: "Final Completion",
+                order_status_pending: "Pending",
+                order_status_initial: "Initial Completion",
+                order_status_final: "Final Completion",
+                for_inquiries: "For inquiries:"
             },
             es: {
                 products_title: "Nuestros Productos Premium",
@@ -2063,7 +2250,7 @@ info@drgustoshop.com
                 site_editor: "Editor del Sitio",
                 product_name: "Nombre del Producto",
                 product_description: "Descripción del Producto",
-                product_price: "Precio (QAR)",
+                product_price: "Precio (QR)",
                 product_image: "Imagen del Producto",
                 add_product: "Agregar Producto",
                 existing_products: "Productos Existentes",
@@ -2112,7 +2299,19 @@ info@drgustoshop.com
                 quick_links: "Enlaces Rápidos",
                 products: "Productos",
                 contact_info: "Información de Contacto",
-                all_rights_reserved: "Todos los derechos reservados."
+                all_rights_reserved: "Todos los derechos reservados.",
+                pending_orders: "Pedidos Pendientes",
+                initial_completion: "Finalización Inicial",
+                final_completion: "Finalización Definitiva",
+                choose_image: "Elegir Imagen del Computador",
+                edit_product: "Editar Producto",
+                update_product: "Actualizar Producto",
+                initial_completion_btn: "Finalización Inicial",
+                final_completion_btn: "Finalización Definitiva",
+                order_status_pending: "Pendiente",
+                order_status_initial: "Finalización Inicial",
+                order_status_final: "Finalización Definitiva",
+                for_inquiries: "Para consultas:"
             },
             tr: {
                 products_title: "Premium Ürünlerimiz",
@@ -2148,7 +2347,7 @@ info@drgustoshop.com
                 site_editor: "Site Editörü",
                 product_name: "Ürün Adı",
                 product_description: "Ürün Açıklaması",
-                product_price: "Fiyat (QAR)",
+                product_price: "Fiyat (QR)",
                 product_image: "Ürün Resmi",
                 add_product: "Ürün Ekle",
                 existing_products: "Mevcut Ürünler",
@@ -2197,7 +2396,19 @@ info@drgustoshop.com
                 quick_links: "Hızlı Bağlantılar",
                 products: "Ürünler",
                 contact_info: "İletişim Bilgileri",
-                all_rights_reserved: "Tüm hakları saklıdır."
+                all_rights_reserved: "Tüm hakları saklıdır.",
+                pending_orders: "Bekleyen Siparişler",
+                initial_completion: "İlk Tamamlama",
+                final_completion: "Son Tamamlama",
+                choose_image: "Bilgisayardan Resim Seç",
+                edit_product: "Ürünü Düzenle",
+                update_product: "Ürünü Güncelle",
+                initial_completion_btn: "İlk Tamamlama",
+                final_completion_btn: "Son Tamamlama",
+                order_status_pending: "Beklemede",
+                order_status_initial: "İlk Tamamlama",
+                order_status_final: "Son Tamamlama",
+                for_inquiries: "Soruşturmalar için:"
             }
         };
 
@@ -2242,7 +2453,9 @@ info@drgustoshop.com
         const adminStoreName = document.getElementById('adminStoreName');
         const adminStoreInfo = document.getElementById('adminStoreInfo');
         const adminContactDetails = document.getElementById('adminContactDetails');
-        const adminOrdersList = document.getElementById('adminOrdersList');
+        const pendingOrdersList = document.getElementById('pendingOrdersList');
+        const initialOrdersList = document.getElementById('initialOrdersList');
+        const finalOrdersList = document.getElementById('finalOrdersList');
         const continueToLocationBtn = document.getElementById('continueToLocationBtn');
         const orderTotalAmount = document.getElementById('orderTotalAmount');
         const submitLocationBtn = document.getElementById('submitLocationBtn');
@@ -2286,6 +2499,17 @@ info@drgustoshop.com
         const productDetailsContent = document.getElementById('productDetailsContent');
         const productImagePreview = document.getElementById('productImagePreview');
         const productImagePreviewImg = document.getElementById('productImagePreviewImg');
+        const editProductModal = document.getElementById('editProductModal');
+        const editModalClose = document.getElementById('editModalClose');
+        const editProductName = document.getElementById('editProductName');
+        const editProductDescription = document.getElementById('editProductDescription');
+        const editProductPrice = document.getElementById('editProductPrice');
+        const editProductImageFile = document.getElementById('editProductImageFile');
+        const editProductImagePreview = document.getElementById('editProductImagePreview');
+        const editProductImagePreviewImg = document.getElementById('editProductImagePreviewImg');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const updateProductBtn = document.getElementById('updateProductBtn');
+        const orderTabs = document.querySelectorAll('.order-tab');
 
         // Initialize the application
         function initApp() {
@@ -2348,7 +2572,7 @@ info@drgustoshop.com
                 discountEndDate.min = this.value;
             });
             
-            // Handle image upload
+            // Handle image upload for adding products
             adminProductImageFile.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
@@ -2364,6 +2588,44 @@ info@drgustoshop.com
                     reader.readAsDataURL(file);
                 }
             });
+            
+            // Handle image upload for editing products
+            editProductImageFile.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    editImageFile = file;
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        editProductImagePreviewImg.src = event.target.result;
+                        editProductImagePreviewImg.style.display = 'block';
+                        editProductImagePreview.querySelector('.upload-placeholder').style.display = 'none';
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Order tabs functionality
+            orderTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const status = this.getAttribute('data-status');
+                    
+                    // Update active tab
+                    orderTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding orders list
+                    document.getElementById('pendingOrdersList').classList.add('hidden');
+                    document.getElementById('initialOrdersList').classList.add('hidden');
+                    document.getElementById('finalOrdersList').classList.add('hidden');
+                    
+                    document.getElementById(`${status}OrdersList`).classList.remove('hidden');
+                    
+                    // Render orders for the selected status
+                    renderOrdersByStatus(status);
+                });
+            });
         }
 
         // Login Functionality
@@ -2377,11 +2639,11 @@ info@drgustoshop.com
             if (email === 'drgusroqa@gmail.com' && password === '@Motasem1982') {
                 isAdmin = true;
                 currentUser = { email, password, isAdmin: true };
-                alert('تم تسجيل الدخول كمدير النظام');
+                alert(translateText('تم تسجيل الدخول كمدير النظام'));
             } else {
                 isAdmin = false;
                 currentUser = { email, password, isAdmin: false };
-                alert('تم تسجيل الدخول كعميل');
+                alert(translateText('تم تسجيل الدخول كعميل'));
             }
             
             // Save user to localStorage
@@ -2389,6 +2651,11 @@ info@drgustoshop.com
             
             showApp();
         });
+
+        // Helper function to translate text
+        function translateText(key) {
+            return translations[currentLanguage][key] || key;
+        }
 
         // Show main application after login
         function showApp() {
@@ -2486,7 +2753,7 @@ info@drgustoshop.com
             // Display account information
             accountEmail.textContent = currentUser.email;
             accountPassword.textContent = currentUser.password;
-            accountType.textContent = isAdmin ? 'مدير النظام' : 'مستخدم عادي';
+            accountType.textContent = isAdmin ? translateText('مدير النظام') : translateText('مستخدم عادي');
         }
 
         function showAdminPage() {
@@ -2504,7 +2771,7 @@ info@drgustoshop.com
             
             showAdminProductsSection();
             renderAdminProducts();
-            renderAdminOrders();
+            renderOrdersByStatus('pending');
             renderDiscounts();
         }
 
@@ -2620,23 +2887,23 @@ info@drgustoshop.com
                 productCard.className = 'product-card';
                 
                 const isInCart = cart.find(item => item.id === product.id);
-                const hasImage = product.imageData || product.image;
+                const hasImage = product.imageData;
                 
                 productCard.innerHTML = `
                     <div class="product-image">
                         ${hasImage ? 
-                            `<img src="${product.imageData || product.image}" alt="${product.name}">` : 
+                            `<img src="${product.imageData}" alt="${product.name}">` : 
                             '<i class="fas fa-birthday-cake" style="font-size: 48px; color: #c084fc;"></i>'
                         }
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
-                        <div class="product-price">ريال قطري ${product.price.toFixed(2)}</div>
+                        <div class="product-price">QR ${product.price.toFixed(2)}</div>
                         <button class="add-to-cart" data-id="${product.id}">
-                            ${isInCart ? 'تم الإضافة إلى السلة' : 'أضف إلى السلة'}
+                            ${isInCart ? translateText('تم الإضافة إلى السلة') : translateText('أضف إلى السلة')}
                         </button>
                         <button class="btn btn-small mt-10 view-details" data-id="${product.id}" style="width: 100%; background-color: var(--secondary-pink);">
-                            عرض التفاصيل
+                            ${translateText('عرض التفاصيل')}
                         </button>
                     </div>
                 `;
@@ -2666,25 +2933,25 @@ info@drgustoshop.com
             
             if (!product) return;
             
-            const hasImage = product.imageData || product.image;
+            const hasImage = product.imageData;
             
             productDetailsContent.innerHTML = `
                 <div class="product-details-image">
                     ${hasImage ? 
-                        `<img src="${product.imageData || product.image}" alt="${product.name}">` : 
+                        `<img src="${product.imageData}" alt="${product.name}">` : 
                         '<i class="fas fa-birthday-cake" style="font-size: 100px; color: #c084fc;"></i>'
                     }
                 </div>
                 <div class="product-details-info">
                     <h2>${product.name}</h2>
-                    <div class="product-price" style="font-size: 24px; margin: 15px 0;">ريال قطري ${product.price.toFixed(2)}</div>
+                    <div class="product-price" style="font-size: 24px; margin: 15px 0;">QR ${product.price.toFixed(2)}</div>
                     <div class="product-description">
-                        <h3>وصف المنتج:</h3>
-                        <p>${product.description || 'لا يوجد وصف لهذا المنتج.'}</p>
+                        <h3>${translateText('وصف المنتج')}:</h3>
+                        <p>${product.description || translateText('لا يوجد وصف لهذا المنتج.')}</p>
                     </div>
                     
                     <div class="product-comments">
-                        <h3 class="comments-title">التعليقات (${product.comments ? product.comments.length : 0})</h3>
+                        <h3 class="comments-title">${translateText('التعليقات')} (${product.comments ? product.comments.length : 0})</h3>
                         <div class="comments-list">
                             ${product.comments && product.comments.length > 0 ? 
                                 product.comments.map(comment => `
@@ -2694,13 +2961,13 @@ info@drgustoshop.com
                                         <div class="comment-date" style="font-size: 12px; color: #999; margin-top: 5px;">${comment.date}</div>
                                     </div>
                                 `).join('') : 
-                                '<p>لا توجد تعليقات بعد.</p>'
+                                `<p>${translateText('لا توجد تعليقات بعد.')}</p>`
                             }
                         </div>
                         
                         <form class="add-comment-form">
-                            <textarea class="comment-input" placeholder="اكتب تعليقك هنا..." id="newCommentText"></textarea>
-                            <button type="submit" class="btn btn-small" style="align-self: flex-end;">إضافة تعليق</button>
+                            <textarea class="comment-input" placeholder="${translateText('اكتب تعليقك هنا...')}" id="newCommentText"></textarea>
+                            <button type="submit" class="btn btn-small" style="align-self: flex-end;">${translateText('إضافة تعليق')}</button>
                         </form>
                     </div>
                 </div>
@@ -2714,7 +2981,7 @@ info@drgustoshop.com
                     const commentText = document.getElementById('newCommentText').value;
                     
                     if (!commentText.trim()) {
-                        alert('الرجاء كتابة تعليق');
+                        alert(translateText('الرجاء كتابة تعليق'));
                         return;
                     }
                     
@@ -2766,7 +3033,7 @@ info@drgustoshop.com
                     id: product.id,
                     name: product.name,
                     price: product.price,
-                    image: product.imageData || product.image,
+                    image: product.imageData,
                     quantity: 1
                 });
             }
@@ -2776,12 +3043,12 @@ info@drgustoshop.com
             
             updateCartTotal();
             renderProducts();
-            showNotification('تمت إضافة المنتج إلى السلة');
+            showNotification(translateText('تمت إضافة المنتج إلى السلة'));
         }
 
         function updateCartTotal() {
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `ريال قطري ${total.toFixed(2)}`;
+            cartTotal.textContent = `QR ${total.toFixed(2)}`;
         }
 
         // Search functionality
@@ -2792,10 +3059,10 @@ info@drgustoshop.com
             cartItems.innerHTML = '';
             
             if (cart.length === 0) {
-                cartItems.innerHTML = '<p class="text-center">سلة التسوق فارغة</p>';
-                subtotalPrice.textContent = 'ريال قطري 0.00';
-                discountPrice.textContent = 'ريال قطري 0.00';
-                totalPrice.textContent = 'ريال قطري 0.00';
+                cartItems.innerHTML = `<p class="text-center">${translateText('سلة التسوق فارغة')}</p>`;
+                subtotalPrice.textContent = 'QR 0.00';
+                discountPrice.textContent = 'QR 0.00';
+                totalPrice.textContent = 'QR 0.00';
                 return;
             }
             
@@ -2816,7 +3083,7 @@ info@drgustoshop.com
                     </div>
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">ريال قطري ${item.price.toFixed(2)}</div>
+                        <div class="cart-item-price">QR ${item.price.toFixed(2)}</div>
                         <div class="cart-item-quantity">
                             <button class="quantity-btn decrease-quantity" data-id="${item.id}">-</button>
                             <span class="quantity-value">${item.quantity}</span>
@@ -2835,9 +3102,9 @@ info@drgustoshop.com
             const discount = calculateDiscount(subtotal);
             const total = subtotal - discount;
             
-            subtotalPrice.textContent = `ريال قطري ${subtotal.toFixed(2)}`;
-            discountPrice.textContent = `ريال قطري ${discount.toFixed(2)}`;
-            totalPrice.textContent = `ريال قطري ${total.toFixed(2)}`;
+            subtotalPrice.textContent = `QR ${subtotal.toFixed(2)}`;
+            discountPrice.textContent = `QR ${discount.toFixed(2)}`;
+            totalPrice.textContent = `QR ${total.toFixed(2)}`;
             
             // Add event listeners to quantity buttons
             document.querySelectorAll('.increase-quantity').forEach(button => {
@@ -2894,7 +3161,7 @@ info@drgustoshop.com
             updateCartTotal();
             renderCart();
             renderProducts();
-            showNotification('تمت إزالة المنتج من السلة');
+            showNotification(translateText('تمت إزالة المنتج من السلة'));
         }
 
         // Discount functionality
@@ -2924,12 +3191,12 @@ info@drgustoshop.com
             });
             
             if (activeDiscount) {
-                discountMessage.textContent = `تم تطبيق خصم ${activeDiscount.percentage}% بنجاح!`;
+                discountMessage.textContent = translateText('تم تطبيق خصم') + ` ${activeDiscount.percentage}% ` + translateText('بنجاح!');
                 discountMessage.className = 'alert-message alert-success';
                 discountMessage.classList.remove('hidden');
-                showNotification(`تم تطبيق كود الخصم ${code}`);
+                showNotification(translateText('تم تطبيق كود الخصم') + ` ${code}`);
             } else {
-                discountMessage.textContent = 'كود الخصم غير صالح أو منتهي الصلاحية';
+                discountMessage.textContent = translateText('كود الخصم غير صالح أو منتهي الصلاحية');
                 discountMessage.className = 'alert-message alert-error';
                 discountMessage.classList.remove('hidden');
             }
@@ -2940,7 +3207,7 @@ info@drgustoshop.com
         // Proceed to payment
         proceedToPaymentBtn.addEventListener('click', function() {
             if (cart.length === 0) {
-                alert('سلة الشراء فارغة. الرجاء إضافة منتجات قبل إتمام الشراء.');
+                alert(translateText('سلة الشراء فارغة. الرجاء إضافة منتجات قبل إتمام الشراء.'));
                 return;
             }
             
@@ -2948,7 +3215,7 @@ info@drgustoshop.com
             const discount = calculateDiscount(total);
             const finalTotal = total - discount;
             
-            orderTotalAmount.textContent = `ريال قطري ${finalTotal.toFixed(2)}`;
+            orderTotalAmount.textContent = `QR ${finalTotal.toFixed(2)}`;
             
             cartPage.classList.add('hidden');
             paymentPage.classList.remove('hidden');
@@ -2957,7 +3224,7 @@ info@drgustoshop.com
         // Checkout process
         checkoutBtn.addEventListener('click', function() {
             if (cart.length === 0) {
-                alert('سلة الشراء فارغة. الرجاء إضافة منتجات قبل إتمام الشراء.');
+                alert(translateText('سلة الشراء فارغة. الرجاء إضافة منتجات قبل إتمام الشراء.'));
                 return;
             }
             
@@ -2965,7 +3232,7 @@ info@drgustoshop.com
             const discount = calculateDiscount(total);
             const finalTotal = total - discount;
             
-            orderTotalAmount.textContent = `ريال قطري ${finalTotal.toFixed(2)}`;
+            orderTotalAmount.textContent = `QR ${finalTotal.toFixed(2)}`;
             
             productsPage.classList.add('hidden');
             paymentPage.classList.remove('hidden');
@@ -3039,18 +3306,18 @@ info@drgustoshop.com
             
             if (total < 300) {
                 deliveryAlert.className = 'alert-message alert-error';
-                deliveryAlert.innerHTML = '<strong>التسليم غير متاح:</strong> إجمالي الطلب أقل من 300 ريال قطري. يجب عليك استلام الطلب بنفسك.';
+                deliveryAlert.innerHTML = `<strong>${translateText('التسليم غير متاح:')}</strong> ${translateText('إجمالي الطلب أقل من 300 ريال قطري. يجب عليك استلام الطلب بنفسك.')}`;
                 return false;
             } else if (distance > 4) {
                 deliveryAlert.className = 'alert-message alert-error';
-                deliveryAlert.innerHTML = `<strong>التسليم غير متاح:</strong> موقعك يبعد ${distance.toFixed(1)} كم عن متجرنا، وهذا يتجاوز نطاق التسليم البالغ 4 كم.`;
+                deliveryAlert.innerHTML = `<strong>${translateText('التسليم غير متاح:')}</strong> ${translateText('موقعك يبعد')} ${distance.toFixed(1)} ${translateText('كم عن متجرنا، وهذا يتجاوز نطاق التسليم البالغ 4 كم.')}`;
                 return false;
             } else {
                 deliveryAlert.className = 'alert-message';
                 deliveryAlert.style.backgroundColor = '#d1fae5';
                 deliveryAlert.style.color = '#065f46';
                 deliveryAlert.style.borderRightColor = '#10b981';
-                deliveryAlert.innerHTML = `<strong>التسليم متاح:</strong> موقعك يبعد ${distance.toFixed(1)} كم عن متجرنا.`;
+                deliveryAlert.innerHTML = `<strong>${translateText('التسليم متاح:')}</strong> ${translateText('موقعك يبعد')} ${distance.toFixed(1)} ${translateText('كم عن متجرنا.')}`;
                 return true;
             }
         }
@@ -3058,12 +3325,12 @@ info@drgustoshop.com
         // Submit location information
         submitLocationBtn.addEventListener('click', function() {
             if (!city.value || !street.value || !houseNumber.value || !phone.value) {
-                alert('الرجاء ملء جميع حقول العنوان.');
+                alert(translateText('الرجاء ملء جميع حقول العنوان.'));
                 return;
             }
             
             if (!isLocationSelected) {
-                alert('الرجاء تحديد موقعك على الخريطة.');
+                alert(translateText('الرجاء تحديد موقعك على الخريطة.'));
                 return;
             }
             
@@ -3086,7 +3353,7 @@ info@drgustoshop.com
                 products: [...cart],
                 total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
                 date: new Date().toISOString(),
-                status: 'معلق'
+                status: 'pending'
             };
             
             // Save order
@@ -3100,7 +3367,7 @@ info@drgustoshop.com
             
             // Update admin orders view if admin is viewing
             if (isAdmin && !adminOrdersSection.classList.contains('hidden')) {
-                renderAdminOrders();
+                renderOrdersByStatus('pending');
             }
             
             // Clear the form
@@ -3112,7 +3379,7 @@ info@drgustoshop.com
 
         // Final continue button
         finalContinueBtn.addEventListener('click', function() {
-            alert('يتم توجيهك إلى البنك QNB الإلكتروني. في التطبيق الفعلي، سيفتح هذا الرابط: https://ib.qnb.com/identity/login');
+            alert(translateText('يتم توجيهك إلى البنك QNB الإلكتروني. في التطبيق الفعلي، سيفتح هذا الرابط: https://ib.qnb.com/identity/login'));
             
             // Return to products page
             confirmationPage.classList.add('hidden');
@@ -3126,7 +3393,7 @@ info@drgustoshop.com
             const price = parseFloat(adminProductPrice.value);
             
             if (!name || isNaN(price) || price <= 0) {
-                alert('الرجاء إدخال اسم منتج وسعر صالحين.');
+                alert(translateText('الرجاء إدخال اسم منتج وسعر صالحين.'));
                 return;
             }
             
@@ -3154,7 +3421,6 @@ info@drgustoshop.com
                 description: description,
                 price: price,
                 imageData: imageData,
-                image: null, // Keep for backward compatibility
                 comments: []
             };
             
@@ -3174,7 +3440,7 @@ info@drgustoshop.com
             renderAdminProducts();
             renderProducts(); // Update user products view
             
-            alert('تمت إضافة المنتج بنجاح!');
+            alert(translateText('تمت إضافة المنتج بنجاح!'));
         }
 
         function renderAdminProducts() {
@@ -3187,14 +3453,25 @@ info@drgustoshop.com
                 productRow.innerHTML = `
                     <div>
                         <strong>${product.name}</strong>
-                        <div>ريال قطري ${product.price.toFixed(2)}</div>
+                        <div>QR ${product.price.toFixed(2)}</div>
                         <div style="font-size: 12px; color: #666; margin-top: 5px;">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</div>
-                        <div style="font-size: 11px; color: #999; margin-top: 3px;">${product.imageData ? '✓ تحتوي على صورة' : '✗ بدون صورة'}</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 3px;">${product.imageData ? '✓ ' + translateText('تحتوي على صورة') : '✗ ' + translateText('بدون صورة')}</div>
                     </div>
-                    <button class="delete-btn delete-product" data-id="${product.id}">حذف</button>
+                    <div class="product-actions">
+                        <button class="edit-btn edit-product" data-id="${product.id}">${translateText('تعديل')}</button>
+                        <button class="delete-btn delete-product" data-id="${product.id}">${translateText('حذف')}</button>
+                    </div>
                 `;
                 
                 adminProductsList.appendChild(productRow);
+            });
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.edit-product').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = parseInt(this.getAttribute('data-id'));
+                    editProduct(productId);
+                });
             });
             
             // Add event listeners to delete buttons
@@ -3206,8 +3483,90 @@ info@drgustoshop.com
             });
         }
 
+        function editProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) return;
+            
+            editingProductId = productId;
+            editProductName.value = product.name;
+            editProductDescription.value = product.description || '';
+            editProductPrice.value = product.price;
+            
+            // Reset image preview
+            editImageFile = null;
+            editProductImageFile.value = '';
+            editProductImagePreviewImg.src = '';
+            editProductImagePreviewImg.style.display = 'none';
+            editProductImagePreview.querySelector('.upload-placeholder').style.display = 'flex';
+            
+            // Show current image if exists
+            if (product.imageData) {
+                editProductImagePreviewImg.src = product.imageData;
+                editProductImagePreviewImg.style.display = 'block';
+                editProductImagePreview.querySelector('.upload-placeholder').style.display = 'none';
+            }
+            
+            editProductModal.classList.remove('hidden');
+        }
+
+        // Close edit modal
+        editModalClose.addEventListener('click', function() {
+            editProductModal.classList.add('hidden');
+        });
+
+        cancelEditBtn.addEventListener('click', function() {
+            editProductModal.classList.add('hidden');
+        });
+
+        // Update product
+        updateProductBtn.addEventListener('click', function() {
+            const name = editProductName.value.trim();
+            const description = editProductDescription.value.trim();
+            const price = parseFloat(editProductPrice.value);
+            
+            if (!name || isNaN(price) || price <= 0) {
+                alert(translateText('الرجاء إدخال اسم منتج وسعر صالحين.'));
+                return;
+            }
+            
+            const product = products.find(p => p.id === editingProductId);
+            if (!product) return;
+            
+            // Update product details
+            product.name = name;
+            product.description = description;
+            product.price = price;
+            
+            // Update image if new one is selected
+            if (editImageFile) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    product.imageData = event.target.result;
+                    saveAndCloseEdit();
+                };
+                reader.readAsDataURL(editImageFile);
+            } else {
+                saveAndCloseEdit();
+            }
+        });
+
+        function saveAndCloseEdit() {
+            // Save to localStorage
+            localStorage.setItem('drgustoProducts', JSON.stringify(products));
+            
+            // Update displays
+            renderAdminProducts();
+            renderProducts();
+            
+            // Close modal
+            editProductModal.classList.add('hidden');
+            
+            alert(translateText('تم تحديث المنتج بنجاح!'));
+        }
+
         function deleteProduct(productId) {
-            if (!confirm('هل أنت متأكد من رغبتك في حذف هذا المنتج؟')) return;
+            if (!confirm(translateText('هل أنت متأكد من رغبتك في حذف هذا المنتج؟'))) return;
             
             products = products.filter(product => product.id !== productId);
             localStorage.setItem('drgustoProducts', JSON.stringify(products));
@@ -3215,7 +3574,7 @@ info@drgustoshop.com
             renderAdminProducts();
             renderProducts(); // Update user products view
             
-            alert('تم حذف المنتج بنجاح!');
+            alert(translateText('تم حذف المنتج بنجاح!'));
         }
 
         // Admin discount management
@@ -3226,12 +3585,12 @@ info@drgustoshop.com
             const endDate = discountEndDate.value;
             
             if (!code || isNaN(percentage) || percentage <= 0 || percentage > 100 || !startDate || !endDate) {
-                alert('الرجاء ملء جميع الحقول بشكل صحيح.');
+                alert(translateText('الرجاء ملء جميع الحقول بشكل صحيح.'));
                 return;
             }
             
             if (new Date(endDate) < new Date(startDate)) {
-                alert('تاريخ النهاية يجب أن يكون بعد تاريخ البداية.');
+                alert(translateText('تاريخ النهاية يجب أن يكون بعد تاريخ البداية.'));
                 return;
             }
             
@@ -3250,14 +3609,14 @@ info@drgustoshop.com
             discountPercentage.value = '';
             
             renderDiscounts();
-            alert('تم إنشاء كود الخصم بنجاح!');
+            alert(translateText('تم إنشاء كود الخصم بنجاح!'));
         });
 
         function renderDiscounts() {
             discountsList.innerHTML = '';
             
             if (discounts.length === 0) {
-                discountsList.innerHTML = '<p>لا توجد أكواد خصم نشطة.</p>';
+                discountsList.innerHTML = `<p>${translateText('لا توجد أكواد خصم نشطة.')}</p>`;
                 return;
             }
             
@@ -3274,17 +3633,135 @@ info@drgustoshop.com
                     <div>
                         <div class="discount-code">${discount.code}</div>
                         <div class="discount-percentage">${discount.percentage}%</div>
-                        <div class="discount-dates">من ${discount.startDate} إلى ${discount.endDate}</div>
+                        <div class="discount-dates">${translateText('من')} ${discount.startDate} ${translateText('إلى')} ${discount.endDate}</div>
                     </div>
                     <div>
                         <span style="color: ${isActive ? 'green' : 'red'}; font-weight: 600;">
-                            ${isActive ? 'نشط' : 'منتهي'}
+                            ${isActive ? translateText('نشط') : translateText('منتهي')}
                         </span>
                     </div>
                 `;
                 
                 discountsList.appendChild(discountItem);
             });
+        }
+
+        // Orders management
+        function renderOrdersByStatus(status) {
+            const filteredOrders = orders.filter(order => order.status === status);
+            const ordersList = document.getElementById(`${status}OrdersList`);
+            
+            ordersList.innerHTML = '';
+            
+            if (filteredOrders.length === 0) {
+                ordersList.innerHTML = `<p class="text-center">${translateText('لا توجد طلبات')}</p>`;
+                return;
+            }
+            
+            filteredOrders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                
+                const productList = order.products.map(item => 
+                    `${item.name} (${item.quantity}x) - QR ${(item.price * item.quantity).toFixed(2)}`
+                ).join('<br>');
+                
+                // Get status translation
+                let statusText = '';
+                if (order.status === 'pending') statusText = translateText('order_status_pending');
+                else if (order.status === 'initial') statusText = translateText('order_status_initial');
+                else if (order.status === 'final') statusText = translateText('order_status_final');
+                
+                orderCard.innerHTML = `
+                    <button class="order-delete delete-order" data-id="${order.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div class="order-header">
+                        <div>
+                            <strong>${translateText('الطلب')} #${order.id}</strong>
+                            <div>${new Date(order.date).toLocaleDateString('ar-QA')}</div>
+                        </div>
+                        <div style="text-align: left;">
+                            <div><strong>${translateText('الإجمالي')}: QR ${order.total.toFixed(2)}</strong></div>
+                            <div>
+                                <span class="order-status status-${order.status}">
+                                    ${statusText}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div><strong>${translateText('العميل')}:</strong> ${order.user}</div>
+                    <div><strong>${translateText('الهاتف')}:</strong> ${order.phone}</div>
+                    <div><strong>${translateText('العنوان')}:</strong> ${order.houseNumber} ${order.street}, ${order.city}</div>
+                    <div><strong>${translateText('الموقع')}:</strong> ${translateText('خط العرض')}: ${order.location.lat.toFixed(4)}, ${translateText('خط الطول')}: ${order.location.lng.toFixed(4)}</div>
+                    <div class="mt-20"><strong>${translateText('المنتجات')}:</strong><br>${productList}</div>
+                    
+                    <div class="order-actions">
+                        ${order.status === 'pending' ? 
+                            `<button class="btn btn-warning btn-small initial-completion" data-id="${order.id}">${translateText('initial_completion_btn')}</button>` : 
+                            ''
+                        }
+                        ${order.status === 'initial' ? 
+                            `<button class="btn btn-success btn-small final-completion" data-id="${order.id}">${translateText('final_completion_btn')}</button>` : 
+                            ''
+                        }
+                    </div>
+                `;
+                
+                ordersList.appendChild(orderCard);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-order').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = parseInt(this.getAttribute('data-id'));
+                    deleteOrder(orderId);
+                });
+            });
+            
+            // Add event listeners to completion buttons
+            document.querySelectorAll('.initial-completion').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = parseInt(this.getAttribute('data-id'));
+                    updateOrderStatus(orderId, 'initial');
+                });
+            });
+            
+            document.querySelectorAll('.final-completion').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = parseInt(this.getAttribute('data-id'));
+                    updateOrderStatus(orderId, 'final');
+                });
+            });
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = newStatus;
+                localStorage.setItem('drgustoOrders', JSON.stringify(orders));
+                
+                // Re-render all order lists
+                renderOrdersByStatus('pending');
+                renderOrdersByStatus('initial');
+                renderOrdersByStatus('final');
+                
+                alert(translateText('تم تحديث حالة الطلب بنجاح!'));
+            }
+        }
+
+        function deleteOrder(orderId) {
+            if (!confirm(translateText('هل أنت متأكد من رغبتك في حذف هذا الطلب؟'))) return;
+            
+            orders = orders.filter(order => order.id !== orderId);
+            localStorage.setItem('drgustoOrders', JSON.stringify(orders));
+            
+            // Re-render all order lists
+            renderOrdersByStatus('pending');
+            renderOrdersByStatus('initial');
+            renderOrdersByStatus('final');
+            
+            alert(translateText('تم حذف الطلب بنجاح!'));
         }
 
         // Admin contact page management
@@ -3298,7 +3775,7 @@ info@drgustoshop.com
             localStorage.setItem('drgustoContactContent', JSON.stringify(contactContent));
             updateContactPageDisplay(contactContent);
             
-            alert('تم حفظ معلومات صفحة الاتصال بنجاح!');
+            alert(translateText('تم حفظ معلومات صفحة الاتصال بنجاح!'));
         });
 
         function updateContactPageDisplay(contactContent) {
@@ -3340,7 +3817,7 @@ info@drgustoshop.com
             const value = editorValue.value.trim();
             
             if (!key || !value) {
-                alert('الرجاء اختيار نص وإدخال قيمة.');
+                alert(translateText('الرجاء اختيار نص وإدخال قيمة.'));
                 return;
             }
             
@@ -3352,7 +3829,7 @@ info@drgustoshop.com
             // Update the page
             translatePage();
             
-            alert('تم حفظ النص بنجاح!');
+            alert(translateText('تم حفظ النص بنجاح!'));
         });
 
         // Translation function
@@ -3388,77 +3865,16 @@ info@drgustoshop.com
             }
         }
 
-        // Admin orders management
-        function renderAdminOrders() {
-            adminOrdersList.innerHTML = '';
-            
-            if (orders.length === 0) {
-                adminOrdersList.innerHTML = '<p>لا توجد طلبات بعد.</p>';
-                return;
-            }
-            
-            orders.forEach(order => {
-                const orderCard = document.createElement('div');
-                orderCard.className = 'order-card';
-                
-                const productList = order.products.map(item => 
-                    `${item.name} (${item.quantity}x) - ريال قطري ${(item.price * item.quantity).toFixed(2)}`
-                ).join('<br>');
-                
-                orderCard.innerHTML = `
-                    <button class="order-delete delete-order" data-id="${order.id}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <div class="order-header">
-                        <div>
-                            <strong>الطلب #${order.id}</strong>
-                            <div>${new Date(order.date).toLocaleDateString('ar-QA')}</div>
-                        </div>
-                        <div style="text-align: left;">
-                            <div><strong>الإجمالي: ريال قطري ${order.total.toFixed(2)}</strong></div>
-                            <div>الحالة: ${order.status}</div>
-                        </div>
-                    </div>
-                    <div><strong>العميل:</strong> ${order.user}</div>
-                    <div><strong>الهاتف:</strong> ${order.phone}</div>
-                    <div><strong>العنوان:</strong> ${order.houseNumber} ${order.street}, ${order.city}</div>
-                    <div><strong>الموقع:</strong> خط العرض: ${order.location.lat.toFixed(4)}, خط الطول: ${order.location.lng.toFixed(4)}</div>
-                    <div class="mt-20"><strong>المنتجات:</strong><br>${productList}</div>
-                `;
-                
-                adminOrdersList.appendChild(orderCard);
-            });
-            
-            // Add event listeners to delete buttons
-            document.querySelectorAll('.delete-order').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = parseInt(this.getAttribute('data-id'));
-                    deleteOrder(orderId);
-                });
-            });
-        }
-
-        function deleteOrder(orderId) {
-            if (!confirm('هل أنت متأكد من رغبتك في حذف هذا الطلب؟')) return;
-            
-            orders = orders.filter(order => order.id !== orderId);
-            localStorage.setItem('drgustoOrders', JSON.stringify(orders));
-            
-            renderAdminOrders();
-            
-            alert('تم حذف الطلب بنجاح!');
-        }
-
         // Contact form submission
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('شكراً لرسالتك! سنتواصل معك قريباً.');
+            alert(translateText('شكراً لرسالتك! سنتواصل معك قريباً.'));
             contactForm.reset();
         });
 
         // Logout functionality
         logoutBtn.addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج؟')) {
+            if (confirm(translateText('هل أنت متأكد من رغبتك في تسجيل الخروج؟'))) {
                 localStorage.removeItem('drgustoUser');
                 currentUser = null;
                 isAdmin = false;
